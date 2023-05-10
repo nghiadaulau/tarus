@@ -29,4 +29,3 @@ tqdm
 Unidecode
 urllib3
 yarl
-pandas

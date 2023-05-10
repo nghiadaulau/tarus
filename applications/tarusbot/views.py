@@ -66,7 +66,7 @@ def index(request):
                     data = message.message.split("/update_config")[-1].strip(" ")
                     data = json.loads(data)
                     settings.FRIDAY = data
-                    with open(f"{settings.BASE_DIR}/friday.json", "w") as f:
+                    with open(f"{settings.BASE_DIR}/config.json", "w") as f:
                         json.dump(data, f, indent=6)
                 except Exception as e:
                     Telegram.send_message(message.chat.chat_id, f"Update config error wit {e}")
