@@ -146,7 +146,6 @@ class Telegram:
             "permissions": cls.chat_permissions,
             "until_date": int((datetime.datetime.now() + datetime.timedelta(seconds=60)).timestamp())
         }
-        print(int((datetime.datetime.now() + datetime.timedelta(seconds=60)).timestamp()))
         return cls.request.fetch(uri=uri, body=payload, **kwargs)
 
 
