@@ -6,11 +6,8 @@ from rest_framework.response import Response
 from django.conf import settings
 
 from applications.services.telegram import *
-from applications.services.api import *
 import openai
 import datetime
-
-openai.api_key = "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"
 
 
 def escape_message(msg: str) -> str:
@@ -83,27 +80,15 @@ def index(request):
         if message.message.__contains__("@tarus"):
             Telegram.send_message(5117860309, escape_message(str(data)))
             if message.message_from.username == "thienduong13":
-                a = Simsimi.have_message(message.message.replace("@tarus_kai_bot", ""))
                 Telegram.send_message(chat_id=message.chat.chat_id,
-                                      message=escape_message(a.get("message")))
-                # Telegram.send_message(chat_id=message.chat.chat_id,
-                #                       message=escape_message("Hello boss. What advice do you have?"))
+                                      message=escape_message("Hello boss. What advice do you have?"))
             else:
-                a = Simsimi.have_message(message.message.replace("@tarus_kai_bot", ""))
-                Telegram.send_message(chat_id=message.chat.chat_id,
-                                      message=escape_message(a.get("message")))
-                # Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you?")
+                Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you?")
         if message.chat.type.__contains__("private"):
             Telegram.send_message(5117860309, escape_message(str(data)))
             if message.message_from.username == "thienduong13":
-                a = Simsimi.have_message(message.message)
                 Telegram.send_message(chat_id=message.chat.chat_id,
-                                      message=escape_message(a.get("message")))
-                # Telegram.send_message(chat_id=message.chat.chat_id,
-                #                       message=escape_message("Hello boss. What advice do you have?"))
+                                      message=escape_message("Hello boss. What advice do you have?"))
             else:
-                a = Simsimi.have_message(message.message)
-                Telegram.send_message(chat_id=message.chat.chat_id,
-                                      message=escape_message(a.get("message")))
-                # Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you?")
+                Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you?")
     return Response({"result": "ok"}, status=200)
