@@ -10,7 +10,7 @@ class MessageFromChatGPT(object):
 
 
 class ChatGPT:
-    request = RequestFetch(protocol="https", host_name="api.openai.com", service_name="ChatGPT")
+    request = RequestFetch(protocol="https", host_name="free.churchless.tech", service_name="ChatGPT")
 
     @classmethod
     @trace_func()
@@ -25,7 +25,8 @@ class ChatGPT:
                 }
             ]
         }
-        header = {
-            "Authorization": f"Bearer {settings.CHATGPT}"
-        }
-        return cls.request.fetch(uri=uri, body=payload, header=header, **kwargs)
+        # header = {
+        #     "Authorization": f"Bearer {settings.CHATGPT}"
+        # }
+        # return cls.request.fetch(uri=uri, body=payload, header=header, **kwargs)
+        return cls.request.fetch(uri=uri, body=payload, **kwargs)
