@@ -3,7 +3,7 @@ from applications.commons.request_base import RequestFetch
 from django.conf import settings
 
 
-class MessageFrom(object):
+class MessageFromChatGPT(object):
     def __init__(self, **kwargs):
         self.content = str(kwargs.get("message").get("content"))
         self.role = str(kwargs.get("message").get("role"))

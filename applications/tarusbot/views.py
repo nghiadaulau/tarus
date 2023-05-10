@@ -81,13 +81,13 @@ def index(request):
         if message.message.__contains__("@tarus"):
             Telegram.send_message(5117860309, escape_message(str(data)))
             resp = ChatGPT.send(message.message.replace("@tarus_kai_bot ", ""))
-            message_gpt = MessageFrom(**resp.get('json_resp').get('choices')[0])
+            message_gpt = MessageFromChatGPT(**resp.get('json_resp').get('choices')[0])
             Telegram.send_message(chat_id=message.chat.chat_id,
                                   message=escape_message(message_gpt.content))
         if message.chat.type.__contains__("private"):
             Telegram.send_message(5117860309, escape_message(str(data)))
-            resp = ChatGPT.send(message.message.replace("@tarus_kai_bot ", ""))
-            message_gpt = MessageFrom(**resp.get('json_resp').get('choices')[0])
+            resp = ChatGPT.send(message.message)
+            message_gpt = MessageFromChatGPT(**resp.get('json_resp').get('choices')[0])
             Telegram.send_message(chat_id=message.chat.chat_id,
                                   message=escape_message(message_gpt.content))
     return Response({"result": "ok"}, status=200)
