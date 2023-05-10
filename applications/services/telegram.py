@@ -1,5 +1,6 @@
 from applications.commons.log_lib import trace_func
 from applications.commons.request_base import RequestFetch
+from django.conf import settings
 
 
 class MessageFrom(object):
@@ -45,7 +46,8 @@ class ChannelPost(object):
 
 
 class Telegram:
-    request = RequestFetch(protocol="https", host_name="api.telegram.org/bot5953270790:AAH3iCmcC8lwlvg4j6ctbFS3xha0BfLc8dQ", service_name="Telegram")
+    request = RequestFetch(protocol="https", host_name=f"api.telegram.org/bot{settings.BOT_TOKEN}",
+                           service_name="Telegram")
 
     @classmethod
     @trace_func()
@@ -68,3 +70,21 @@ class Telegram:
         }
         return cls.request.fetch(uri=uri, body=payload, **kwargs)
 
+    @classmethod
+    @trace_func()
+    def get_member_count(cls, chat_id, **kwargs):
+        uri = "getChatMemberCount"
+        payload = {
+            "chat_id": int(chat_id),
+        }
+        return cls.request.fetch(uri=uri, body=payload, **kwargs)
+
+    @classmethod
+    @trace_func()
+    def get_member(cls, chat_id, user_id, **kwargs):
+        uri = "getChatMember"
+        payload = {
+            "chat_id": int(chat_id),
+            "user_id": int(user_id)
+        }
+        return cls.request.fetch(uri=uri, body=payload, **kwargs)

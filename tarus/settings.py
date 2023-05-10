@@ -121,8 +121,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-BOT_ID = "5953270790"
-BOT_TOKEN = "5953270790:AAH3iCmcC8lwlvg4j6ctbFS3xha0BfLc8dQ"
 API_AUTHENTICATION = {}
 SERVICE_AUTHENTICATION = []
 AWS_ACCESS_KEY = ""
@@ -133,3 +131,7 @@ import json
 SERVICE_NAME = "tarus-bot"
 with open(f"{BASE_DIR}/config.json", "r") as f:
     FRIDAY = json.load(f)
+
+BOT_ID = FRIDAY.get("telegram").get("id")
+BOT_TOKEN = FRIDAY.get("telegram").get("token")
+CHATGPT = FRIDAY.get("chatgpt").get("key")

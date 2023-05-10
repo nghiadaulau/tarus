@@ -10,6 +10,12 @@
                   "type": "AOTHATDAY",
                   "title": "supergroup"
             }
+      },
+      "chatgpt": {
+            "key": "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"
+      },
+      "telegram": {
+            "id": "5953270790",
+            "token": "5953270790:AAH3iCmcC8lwlvg4j6ctbFS3xha0BfLc8dQ"
       }
-
 }
