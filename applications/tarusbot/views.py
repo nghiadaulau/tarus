@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from django.conf import settings
 
 from applications.services.telegram import *
-from applications.services.chatgpt import *
 import openai
 import datetime
 
@@ -49,6 +48,17 @@ def index(request):
         message = TelegramPrivateMessage(**data.get("message", {}))
         if not message:
             return Response({"result": "ok"}, status=200)
+        if message.is_bot_command:
+            if message.message.startswith("/information"):
+                Telegram.get_information_boss(message.chat.chat_id)
+                return Response({"result": "ok"}, status=200)
+        if message.date.hour + 7 >= 23 or message.date.hour + 7 < 5:
+            Telegram.send_message(5117860309, escape_message(str(data)))
+            username = f"@{message.message_from.username}" if message.message_from.username else ''
+            Telegram.send_message(chat_id=message.chat.chat_id,
+                                  message=escape_message(f"{username} Ngủ thôi trễ rồi {message.message_from.first_name}. Tao block trong chốc lát á nha. Đi ngủ đi sáng mai dậy thấy"))
+            Telegram.restrict(chat_id=message.chat.chat_id, user_id=message.message_from.id)
+            return Response({"result": "ok"}, status=200)
         if message.new_chat_member:
             if str(message.new_chat_member.get("id")) == settings.BOT_ID:
                 for chat_id, _ in settings.FRIDAY.get("boss", {}).items():
@@ -57,7 +67,7 @@ def index(request):
         elif message.chat.chat_id == "5117860309":
             if message.is_bot_command and message.message == "/get_config":
                 mload = escape_message(f"Present config is {json.dumps(settings.FRIDAY)}")
-                a = Telegram.send_message(message.chat.chat_id, mload)
+                Telegram.send_message(message.chat.chat_id, mload)
 
             if message.is_bot_command and message.message.startswith("/update_config"):
                 try:
@@ -80,14 +90,16 @@ def index(request):
             return Response({"result": "ok"}, status=200)
         if message.message.__contains__("@tarus"):
             Telegram.send_message(5117860309, escape_message(str(data)))
-            resp = ChatGPT.send(message.message.replace("@tarus_kai_bot ", ""))
-            message_gpt = MessageFromChatGPT(**resp.get('json_resp').get('choices')[0])
-            Telegram.send_message(chat_id=message.chat.chat_id,
-                                  message=escape_message(message_gpt.content))
+            if message.message_from.username == "thienduong13":
+                Telegram.send_message(chat_id=message.chat.chat_id,
+                                      message=escape_message("Hello boss. What advice do you have?"))
+            else:
+                Telegram.send_message(chat_id=message.chat.chat_id, message=escape_message("Hi there, what can I do for you? Sorry for the inconvenience, I am currently only born to serve certain tasks."))
         if message.chat.type.__contains__("private"):
             Telegram.send_message(5117860309, escape_message(str(data)))
-            resp = ChatGPT.send(message.message)
-            message_gpt = MessageFromChatGPT(**resp.get('json_resp').get('choices')[0])
-            Telegram.send_message(chat_id=message.chat.chat_id,
-                                  message=escape_message(message_gpt.content))
+            if message.message_from.username == "thienduong13":
+                Telegram.send_message(chat_id=message.chat.chat_id,
+                                      message=escape_message("Hello boss. What advice do you have?"))
+            else:
+                Telegram.send_message(chat_id=message.chat.chat_id, message=escape_message("Hi there, what can I do for you? Sorry for the inconvenience, I am currently only born to serve certain tasks."))
     return Response({"result": "ok"}, status=200)

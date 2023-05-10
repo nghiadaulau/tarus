@@ -1,6 +1,11 @@
+import json
+
 from applications.commons.log_lib import trace_func
 from applications.commons.request_base import RequestFetch
 from django.conf import settings
+import threading
+
+import datetime
 
 
 class MessageFrom(object):
@@ -30,6 +35,7 @@ class TelegramPrivateMessage(object):
         self.group_chat_created = kwargs.get("group_chat_created", False)
         self.new_chat_member = kwargs.get("new_chat_member", {})
         self.entities = kwargs.get("entities", [])
+        self.date = datetime.datetime.fromtimestamp(int(kwargs.get("date"))) if kwargs.get("date", None) else kwargs.get("date", None)
 
     @property
     def is_bot_command(self):
@@ -42,12 +48,29 @@ class ChannelPost(object):
     def __init__(self, **kwargs):
         self.sender_chat = Chat(**kwargs.get("chat", {}))
         self.message_from = MessageFrom(**kwargs.get("sender_chat", {}))
-        self.message = kwargs.get("text", "")
+        self.message = int(kwargs.get("text", ""))
 
 
 class Telegram:
     request = RequestFetch(protocol="https", host_name=f"api.telegram.org/bot{settings.BOT_TOKEN}",
                            service_name="Telegram")
+    chat_permissions = {
+        "can_send_messages": False,
+        "can_send_audios": False,
+        "can_send_documents": False,
+        "can_send_photos": False,
+        "can_send_videos": False,
+        "can_send_video_notes": False,
+        "can_send_voice_notes": False,
+        "can_send_polls": False,
+        "can_send_other_messages": False,
+        "can_add_web_page_previews": False,
+        "can_change_info": False,
+        "can_invite_users": False,
+        "can_pin_messages": False,
+        "can_manage_topics": False
+    }
+
 
     @classmethod
     @trace_func()
@@ -88,3 +111,42 @@ class Telegram:
             "user_id": int(user_id)
         }
         return cls.request.fetch(uri=uri, body=payload, **kwargs)
+
+    @classmethod
+    @trace_func()
+    def get_information_boss(cls, chat_id, **kwargs):
+        uri = "sendMessage"
+        payload = {
+            "chat_id": chat_id,
+            "text": "Đây là thông tin của Nhất Nghĩa",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "Facebook",
+                            "url": "https://www.facebook.com/NghiaDauLau"
+                        },
+                        {
+                            "text": "Instagram",
+                            "url": "https://www.instagram.com/nhatnghia_kai/"
+                        }
+                    ]
+                ]
+            }
+        }
+        return cls.request.fetch(uri=uri, body=payload, **kwargs)
+
+    @classmethod
+    @trace_func()
+    def restrict(cls, chat_id, user_id, **kwargs):
+        uri = "restrictChatMember"
+        payload = {
+            "chat_id": int(chat_id),
+            "user_id": int(user_id),
+            "permissions": cls.chat_permissions,
+            "until_date": int((datetime.datetime.now() + datetime.timedelta(seconds=60)).timestamp())
+        }
+        print(int((datetime.datetime.now() + datetime.timedelta(seconds=60)).timestamp()))
+        return cls.request.fetch(uri=uri, body=payload, **kwargs)
+
+

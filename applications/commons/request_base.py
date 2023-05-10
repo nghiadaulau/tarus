@@ -33,7 +33,7 @@ class RequestFetch(object):
         return default_header
 
     @trace_func()
-    def fetch(self, uri='', body=None, files=None, logger=None, header=None, method="post", timeout=20, params=None, log_resp=True, **kwargs):
+    def fetch(self, uri='', body=None, files=None, logger=None, header=None, method="post", timeout=100, params=None, log_resp=True, **kwargs):
 
         if uri.startswith("/"):
             full_url = "{}{}".format(self.url, uri) if uri else self.url
