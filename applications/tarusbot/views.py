@@ -83,12 +83,12 @@ def index(request):
                 Telegram.send_message(chat_id=message.chat.chat_id,
                                       message=escape_message("Hello boss. What advice do you have?"))
             else:
-                Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you?")
+                Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you? Sorry for the inconvenience, I am currently only born to serve certain tasks.")
         if message.chat.type.__contains__("private"):
             Telegram.send_message(5117860309, escape_message(str(data)))
             if message.message_from.username == "thienduong13":
                 Telegram.send_message(chat_id=message.chat.chat_id,
                                       message=escape_message("Hello boss. What advice do you have?"))
             else:
-                Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you?")
+                Telegram.send_message(chat_id=message.chat.chat_id, message="Hi there, what can I do for you? Sorry for the inconvenience, I am currently only born to serve certain tasks.")
     return Response({"result": "ok"}, status=200)
