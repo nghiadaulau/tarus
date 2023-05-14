@@ -22,14 +22,14 @@ def index(request):
             if message.message.startswith("/information"):
                 Telegram.get_information_boss(message.chat.chat_id)
                 return Response({"result": "ok"}, status=200)
-        if validate_message(message.message):
-            return Response({"result": "ok"}, status=200)
-        if message.date.hour + 7 > 23 or message.date.hour + 7 < 5:
+            if message.message.startswith("/bug"):
+                Telegram.send_message(chat_id=message.chat.chat_id,
+                                      message=escape_message("@thienduong13 Có bug kìa bạn ơi. Fix bug nào."))
+                bug = message.message.replace("/bug", "")
+                Telegram.send_message(chat_id=message.chat.chat_id, message=escape_message(f"Information of bug: {bug}"))
+        timing = datetime.datetime.now() + datetime.timedelta(hours=7)
+        if validate_message(message, timing):
             Telegram.send_message(5117860309, escape_message(str(data)))
-            username = f"@{message.message_from.username}" if message.message_from.username else ''
-            Telegram.send_message(chat_id=message.chat.chat_id,
-                                  message=escape_message(f"{username} Ngủ thôi trễ rồi {message.message_from.first_name}. Tao block trong chốc lát á nha. Đi ngủ đi sáng mai dậy thấy"))
-            Telegram.restrict(chat_id=message.chat.chat_id, user_id=message.message_from.id)
             return Response({"result": "ok"}, status=200)
         if message.new_chat_member:
             if str(message.new_chat_member.get("id")) == settings.BOT_ID:

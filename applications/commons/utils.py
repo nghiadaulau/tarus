@@ -180,11 +180,19 @@ def escape_message(msg: str) -> str:
     return ''.join(result)
 
 
-def validate_message(message):
-    if message.casefold().__contains__("sex"):
+def validate_message(message, timing):
+    validate = False
+    if message.message.casefold().__contains__("sex"):
         Telegram.delete_message(chat_id=message.chat.chat_id,
                                 message_id=message.message_id)
         Telegram.send_message(chat_id=message.chat.chat_id,
                               message=escape_message("Ê ê, viết bậy mày. Tao xóa nha."))
-        return True
-    return False
+        validate = True
+    if 0 <= timing.hour < 5:
+        username = f"@{message.message_from.username}" if message.message_from.username else ''
+        Telegram.send_message(chat_id=message.chat.chat_id,
+                              message=escape_message(
+                                  f"{username} Ngủ thôi trễ rồi {message.message_from.first_name}. Tao block trong chốc lát á nha. Đi ngủ đi sáng mai dậy thấy"))
+        Telegram.restrict(chat_id=message.chat.chat_id, user_id=message.message_from.id)
+        return Response({"result": "ok"}, status=200)
+    return validate
