@@ -12,6 +12,8 @@ from django.conf import settings
 from django.contrib.auth.management import create_permissions
 from django.core.cache import cache
 from unidecode import unidecode
+from applications.services.telegram import *
+from rest_framework.response import Response
 
 
 class CustomObject:
@@ -146,3 +148,43 @@ def timestamp2datetime(timestamp):
 def base64decode2binary(base64_str):
     return base64.b64decode(base64_str)
 
+
+def escape_message(msg: str) -> str:
+    special_chars = '_*[]()~`>#+-=|{}.!'
+    pre_code_chars = '`\\'
+    link_emoji_chars = ')\\'
+    valid_emoji_chars = set(range(1, 127)) - set(map(ord, special_chars)) - set(map(ord, pre_code_chars))
+    valid_emoji_chars.update([13, 10])  # carriage return and line feed
+    result = []
+    i = 0
+    while i < len(msg):
+        c = msg[i]
+        if c == '\\':
+            if i + 1 < len(msg) and ord(msg[i + 1]) in valid_emoji_chars:
+                result.append(msg[i + 1])
+                i += 1
+            else:
+                result.append('\\\\')
+        elif c in pre_code_chars:
+            result.append('\\' + c)
+        elif c in link_emoji_chars and '(...)' in ''.join(result):
+            result.append('\\' + c)
+        elif c in special_chars:
+            result.append('\\' + c)
+        elif c == '_' and i + 2 < len(msg) and msg[i:i + 3] == '___':
+            result.append('__\r')
+            i += 2
+        else:
+            result.append(c)
+        i += 1
+    return ''.join(result)
+
+
+def validate_message(message):
+    if message.casefold().__contains__("sex"):
+        Telegram.delete_message(chat_id=message.chat.chat_id,
+                                message_id=message.message_id)
+        Telegram.send_message(chat_id=message.chat.chat_id,
+                              message=escape_message("Ê ê, viết bậy mày. Tao xóa nha."))
+        return True
+    return False

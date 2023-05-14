@@ -6,39 +6,9 @@ from rest_framework.response import Response
 from django.conf import settings
 
 from applications.services.telegram import *
+from applications.commons.utils import *
 import openai
 import datetime
-
-
-def escape_message(msg: str) -> str:
-    special_chars = '_*[]()~`>#+-=|{}.!'
-    pre_code_chars = '`\\'
-    link_emoji_chars = ')\\'
-    valid_emoji_chars = set(range(1, 127)) - set(map(ord, special_chars)) - set(map(ord, pre_code_chars))
-    valid_emoji_chars.update([13, 10])  # carriage return and line feed
-    result = []
-    i = 0
-    while i < len(msg):
-        c = msg[i]
-        if c == '\\':
-            if i + 1 < len(msg) and ord(msg[i + 1]) in valid_emoji_chars:
-                result.append(msg[i + 1])
-                i += 1
-            else:
-                result.append('\\\\')
-        elif c in pre_code_chars:
-            result.append('\\' + c)
-        elif c in link_emoji_chars and '(...)' in ''.join(result):
-            result.append('\\' + c)
-        elif c in special_chars:
-            result.append('\\' + c)
-        elif c == '_' and i + 2 < len(msg) and msg[i:i + 3] == '___':
-            result.append('__\r')
-            i += 2
-        else:
-            result.append(c)
-        i += 1
-    return ''.join(result)
 
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
@@ -52,7 +22,9 @@ def index(request):
             if message.message.startswith("/information"):
                 Telegram.get_information_boss(message.chat.chat_id)
                 return Response({"result": "ok"}, status=200)
-        if message.date.hour + 7 >= 23 or message.date.hour + 7 < 5:
+        if validate_message(message.message):
+            return Response({"result": "ok"}, status=200)
+        if message.date.hour + 7 > 23 or message.date.hour + 7 < 5:
             Telegram.send_message(5117860309, escape_message(str(data)))
             username = f"@{message.message_from.username}" if message.message_from.username else ''
             Telegram.send_message(chat_id=message.chat.chat_id,
@@ -82,12 +54,6 @@ def index(request):
                     Telegram.send_message(message.chat.chat_id, f"Success update {settings.FRIDAY}")
         elif settings.FRIDAY.get("group", {}).get(str(message.chat.chat_id)):
             Telegram.send_message(message.chat.chat_id, f"Recogidasdknasjkdnas")
-        if message.message.casefold().__contains__("sex"):
-            Telegram.delete_message(chat_id=message.chat.chat_id,
-                                    message_id=message.message_id)
-            Telegram.send_message(chat_id=message.chat.chat_id,
-                                  message=escape_message("Ê ê, viết bậy mày. Tao xóa nha."))
-            return Response({"result": "ok"}, status=200)
         if message.message.__contains__("@tarus"):
             Telegram.send_message(5117860309, escape_message(str(data)))
             if message.message_from.username == "thienduong13":

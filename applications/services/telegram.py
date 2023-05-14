@@ -35,7 +35,9 @@ class TelegramPrivateMessage(object):
         self.group_chat_created = kwargs.get("group_chat_created", False)
         self.new_chat_member = kwargs.get("new_chat_member", {})
         self.entities = kwargs.get("entities", [])
-        self.date = datetime.datetime.fromtimestamp(int(kwargs.get("date"))) if kwargs.get("date", None) else kwargs.get("date", None)
+        self.date = datetime.datetime.fromtimestamp(int(kwargs.get("date"))) if kwargs.get("date",
+                                                                                           None) else kwargs.get("date",
+                                                                                                                 None)
 
     @property
     def is_bot_command(self):
@@ -70,7 +72,6 @@ class Telegram:
         "can_pin_messages": False,
         "can_manage_topics": False
     }
-
 
     @classmethod
     @trace_func()
@@ -147,5 +148,4 @@ class Telegram:
             "until_date": int((datetime.datetime.now() + datetime.timedelta(seconds=60)).timestamp())
         }
         return cls.request.fetch(uri=uri, body=payload, **kwargs)
-
 
