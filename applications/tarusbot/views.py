@@ -7,6 +7,7 @@ from django.conf import settings
 
 from applications.services.telegram import *
 from applications.commons.utils import *
+from applications.tarusbot.utils import *
 import openai
 import datetime
 
