@@ -1,6 +1,5 @@
 from applications.services.telegram import *
 from applications.commons.utils import *
-import subprocess
 
 
 def escape_message(msg: str) -> str:
@@ -73,10 +72,9 @@ def bot_command(message):
         if len(command) == 2:
             for _ in range(10):
                 Telegram.send_message(chat_id=message.chat.chat_id,
-                                      message=f"[{command[1]}](tg://user?id={MEMBER.get(command[1].lower())}) Hú hú hú bug bug bug")
+                                      message=f"[{command[1]}](tg://user?id={MEMBER.get(command[1].lower())}) Spam tới chết")
         else:
-            Telegram.send_message(chat_id=message.chat.chat_id,
-                                  message="Format is not valid")
+            Telegram.send_message(chat_id=message.chat.chat_id, message="Format is not valid")
 
     else:
         Telegram.send_message(chat_id=message.chat.chat_id, message=escape_message(
