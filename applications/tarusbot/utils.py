@@ -1,5 +1,6 @@
 from applications.services.telegram import *
 from applications.commons.utils import *
+import subprocess
 
 
 def escape_message(msg: str) -> str:
@@ -41,7 +42,7 @@ def validate_message(message, timing):
         Telegram.send_message(chat_id=message.chat.chat_id,
                               message=escape_message("Ê ê, viết bậy mày. Tao xóa nha."))
         validate = True
-    if 0 <= timing.hour < 5:
+    if 2 <= timing.hour < 5:
         username = f"@{message.message_from.username}" if message.message_from.username else ''
         Telegram.send_message(chat_id=message.chat.chat_id,
                               message=escape_message(
@@ -49,3 +50,34 @@ def validate_message(message, timing):
         Telegram.restrict(chat_id=message.chat.chat_id, user_id=message.message_from.id)
         validate = True
     return validate
+
+
+MEMBER = {
+    "huy": 5344050801,
+    "thảo": 5294271027,
+    "nam": 5333702189,
+    "minh": 5662519208
+}
+
+
+def bot_command(message):
+    if message.message.startswith("/information"):
+        Telegram.get_information_boss(message.chat.chat_id)
+    elif message.message.startswith("/bug"):
+        Telegram.send_message(chat_id=message.chat.chat_id,
+                              message=f"[Boss](tg://user?id=5117860309) Hú hú hú bug bug bug")
+        bug = message.message.replace("/bug", "")
+        Telegram.send_message(chat_id=message.chat.chat_id, message=escape_message(f"Information of bug: {bug}"))
+    elif message.message.startswith("/spam"):
+        command = message.message.split(" ")
+        if len(command) == 2:
+            for _ in range(10):
+                Telegram.send_message(chat_id=message.chat.chat_id,
+                                      message=f"[{command[1]}](tg://user?id={MEMBER.get(command[1].lower())}) Hú hú hú bug bug bug")
+        else:
+            Telegram.send_message(chat_id=message.chat.chat_id,
+                                  message="Format is not valid")
+
+    else:
+        Telegram.send_message(chat_id=message.chat.chat_id, message=escape_message(
+            "Sorry, Your command sent is not supported. Please contact the @thienduong13 to update with new features."))

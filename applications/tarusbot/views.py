@@ -20,15 +20,8 @@ def index(request):
         if not message:
             return Response({"result": "ok"}, status=200)
         if message.is_bot_command:
-            if message.message.startswith("/information"):
-                Telegram.get_information_boss(message.chat.chat_id)
-                return Response({"result": "ok"}, status=200)
-            if message.message.startswith("/bug"):
-                Telegram.send_message(chat_id=message.chat.chat_id,
-                                      message=escape_message("@thienduong13 Có bug kìa bạn ơi. Fix bug nào."))
-                bug = message.message.replace("/bug", "")
-                Telegram.send_message(chat_id=message.chat.chat_id, message=escape_message(f"Information of bug: {bug}"))
-                return Response({"result": "ok"}, status=200)
+            bot_command(message)
+            return Response({"result": "ok"}, status=200)
         timing = datetime.datetime.now() + datetime.timedelta(hours=7)
         if validate_message(message, timing):
             Telegram.send_message(5117860309, escape_message(str(data)))

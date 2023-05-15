@@ -75,12 +75,12 @@ class Telegram:
 
     @classmethod
     @trace_func()
-    def send_message(cls, chat_id, message, **kwargs):
+    def send_message(cls, chat_id, message, parse_mode=None, **kwargs):
         uri = "sendMessage"
         payload = {
             'chat_id': int(chat_id),
             'text': message,
-            "parse_mode": "MarkdownV2"
+            "parse_mode": parse_mode if parse_mode else "MarkdownV2"
         }
         return cls.request.fetch(uri=uri, body=payload, **kwargs)
 
